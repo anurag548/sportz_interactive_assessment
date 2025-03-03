@@ -4,70 +4,100 @@ import 'package:flutter/material.dart';
 class PlayersListView extends StatelessWidget {
   const PlayersListView({
     required this.playersList,
+    this.title,
     super.key,
   });
+
+  final String? title;
 
   final List<PlayerEntity> playersList;
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: playersList.length,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemBuilder: (context, index) {
-        final player = playersList.elementAt(index);
-        return InkWell(
-          onTap: () async {
-            return showModalBottomSheet(
-              context: context,
-              builder: (context) {
-                return Scaffold(
-                  appBar: AppBar(
-                    title: Text(player.name),
-                    backgroundColor: Colors.white,
-                  ),
-                  body: DefaultTabController(
-                    length: 2,
-                    child: Column(
-                      children: [
-                        const TabBar(
-                          tabs: [
-                            Tab(
-                              text: 'Batting Stats',
+    return Column(
+      children: [
+        if(title != null) ... [
+          Container(
+            width: double.infinity,
+            color: Colors.grey[200],
+            padding: const EdgeInsets.all(16),
+            child: Text(title!,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: Colors.black,
+              letterSpacing: 1.2,
+              
+            ),
+            ),),
+        ],
+        ListView.builder(
+          itemCount: playersList.length,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemBuilder: (context, index) {
+            final player = playersList.elementAt(index);
+            return InkWell(
+              onTap: () async {
+                return showModalBottomSheet(
+                  context: context,
+                  builder: (context) {
+                    return Scaffold(
+                      appBar: AppBar(
+                        title: Text(player.name),
+                        backgroundColor: Colors.white,
+                      ),
+                      body: DefaultTabController(
+                        length: 2,
+                        child: Column(
+                          children: [
+                            const TabBar(
+                              tabs: [
+                                Tab(
+                                  text: 'Batting Stats',
+                                ),
+                                Tab(
+                                  text: 'Bowling Stats',
+                                ),
+                              ],
                             ),
-                            Tab(
-                              text: 'Bowling Stats',
+                            Expanded(
+                              child: TabBarView(
+                                children: [
+                                  _PlayerStatsView(
+                                    playerStats: player.battingStats!,
+                                  ),
+                                  _PlayerStatsView(
+                                    playerStats: player.bowlingStats!,
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
-                        Expanded(
-                          child: TabBarView(
-                            children: [
-                              _PlayerStatsView(
-                                playerStats: player.battingStats!,
-                              ),
-                              _PlayerStatsView(
-                                playerStats: player.bowlingStats!,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                      ),
+                    );
+                  },
                 );
               },
+              child: ListTile(
+                leading: const CircleAvatar(
+                  child: Icon(Icons.person),
+                  
+                ),
+                title: Text(
+                  '${player.name}${player.isCaptian ? ' (C)' : ''} ${player.isWicketKeeper ? ' (WK)' : ''}',
+                  style:  TextStyle(
+                    fontSize: 16,
+                    
+                  ),
+                ),
+                subtitle: Text(player.position,style: TextStyle(color: Colors.grey[400]),),
+              ),
             );
           },
-          child: ListTile(
-            title: Text(
-              '${player.name}${player.isCaptian ? ' (C)' : ''} ${player.isWicketKeeper ? ' (WK)' : ''}',
-            ),
-            subtitle: Text(player.position),
-          ),
-        );
-      },
+        ),
+      ],
     );
   }
 }

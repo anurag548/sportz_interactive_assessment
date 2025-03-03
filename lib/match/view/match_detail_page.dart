@@ -31,27 +31,7 @@ class MatchDetailPage extends StatelessWidget {
             '${match.homeTeam.teamFullName} vs ${match.awayTeam.teamFullName}',
           ),
         ),
-        body: BlocBuilder<MatchDetailBloc, MatchDetailState>(
-          builder: (context, state) {
-            if (state is MatchDetailLoaded) {
-              return SingleChildScrollView(
-                child: Column(
-                  children: [
-                    PlayersListView(
-                      playersList: state.matchDetail.homeTeam.players,
-                    ),
-                    PlayersListView(
-                      playersList: state.matchDetail.awayTeam.players,
-                    ),
-                  ],
-                ),
-              );
-            }
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          },
-        ),
+        body: const MatchDetailView(),
       ),
     );
   }
