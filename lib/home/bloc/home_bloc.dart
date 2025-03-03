@@ -17,8 +17,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     FetchMatchListings event,
     Emitter<HomeState> emit,
   ) async {
-    final matchListings = await appRepository.getMatchLists();
+    try {
+      final matchListings = await appRepository.getMatchLists();
 
-    emit(MatchListingsLoaded(matchListings: matchListings));
+      emit(MatchListingsLoaded(matchListings: matchListings));
+    } on AppRepositoryFailure catch (e) {
+      emit(MatchListingsError(message: e.message));
+    }
   }
 }

@@ -13,3 +13,13 @@ final class MatchListingsLoaded extends HomeState with EquatableMixin {
   @override
   List<Object> get props => [matchListings,];
 }
+
+
+final class MatchListingsError extends HomeState with EquatableMixin {
+  MatchListingsError({required this.message});
+
+  final String message;
+
+  @override
+  List<Object> get props => [message,];
+}

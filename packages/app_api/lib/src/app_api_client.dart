@@ -15,7 +15,10 @@ const List<String> availablePaths = [
 /// {@endtemplate}
 class AppApiRequestFailure implements Exception {
   /// {@macro app_api_request_failure}
-  AppApiRequestFailure(this.message);
+  AppApiRequestFailure(this.statusCode,this.message);
+
+  /// The status code of the response.
+  final int statusCode;
 
   /// The error message.
   final String message;
@@ -24,9 +27,32 @@ class AppApiRequestFailure implements Exception {
   String toString() => 'AppApiRequestFailure: $message';
 }
 
+/// {@template app_api_malformed_request}
+/// Exception thrown when the request is malformed.
+/// {@endtemplate}
+class AppApiMalformedRequest implements Exception {
+  /// {@macro app_api_malformed_request}
+  AppApiMalformedRequest(this.status,this.message,);
+
+  /// The status code of the response.
+  final String status;
+
+  /// The error message.
+  final String message;
+
+  @override
+  String toString() => 'AppApiMalformedRequest: $message';
+}
+
 extension on http.Response {
   /// Converts the response body to a json object.
-  Map<String, dynamic> get json => jsonDecode(body) as Map<String, dynamic>;
+  Map<String, dynamic> get json {
+    try {
+      return jsonDecode(body) as Map<String, dynamic>;
+    } on FormatException {
+      throw AppApiMalformedRequest('Response Format Improper', 'Malformed response',);
+    }
+  } 
 }
 
 /// {@template app_api}
@@ -55,7 +81,7 @@ class AppApiClient {
     );
 
     if (response.statusCode != HttpStatus.ok) {
-      throw AppApiRequestFailure('Success');
+      throw AppApiRequestFailure(response.statusCode,'Request failed');
     }
 
     final json = response.json;

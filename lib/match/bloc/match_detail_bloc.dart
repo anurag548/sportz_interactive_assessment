@@ -16,6 +16,10 @@ class MatchDetailBloc extends Bloc<MatchDetailEvent, MatchDetailState> {
     FetchMatchDetails event,
     Emitter<MatchDetailState> emit,
   ) async {
-    emit(MatchDetailLoaded(await appRepository.getMatchDetails(event.match)));
+    try {
+  emit(MatchDetailLoaded(await appRepository.getMatchDetails(event.match)));
+}  catch (e) {
+  
+  emit(MatchDetailError(message: e.toString()));}
   }
 }

@@ -15,3 +15,14 @@ final class MatchDetailLoaded extends MatchDetailState with EquatableMixin {
         matchDetail,
       ];
 }
+
+final class MatchDetailError extends MatchDetailState with EquatableMixin {
+  MatchDetailError({required this.message});
+
+  final String message;
+
+  @override
+  List<Object?> get props => [
+        message,
+      ];
+}

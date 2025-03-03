@@ -3,6 +3,21 @@ import 'dart:isolate';
 import 'package:app_api/app_api.dart';
 import 'package:app_repository/app_repository.dart';
 
+
+/// {@template app_repository_failure}
+/// 
+/// {@endtemplate}
+class AppRepositoryFailure implements Exception {
+  /// {@macro app_repository_failure}
+  AppRepositoryFailure(this.message);
+
+  /// The error message.
+  final String message;
+
+  @override
+  String toString() => 'AppRepositoryFailure: $message';
+}
+
 /// Key for storing the match details in the cache.
 const String kMatchDetailsKey = 'match_list';
 
@@ -32,18 +47,26 @@ class AppRepository {
     )) {
       return _cachedResponseList;
     }
+    try {
     for (final path in availablePaths) {
-      final response = await Isolate.run(() => _apiClient.getData(path: path));
-      _cachedResponseList
-        ..update(
-          kMatchDetailsKey,
-          (previous) => List.from(previous)..add(response.matchDetails),
-        )
-        ..update(
-          kTeamDetailsKey,
-          (previous) => List.from(previous)..addAll(response.teamDetails),
-        );
+    final response = await Isolate.run(() => _apiClient.getData(path: path));
+    _cachedResponseList
+      ..update(
+        kMatchDetailsKey,
+        (previous) => List.from(previous)..add(response.matchDetails),
+      )
+      ..update(
+        kTeamDetailsKey,
+        (previous) => List.from(previous)..addAll(response.teamDetails),
+      );
     }
+  } catch (error) {
+    if (error is AppApiRequestFailure) {
+      throw AppRepositoryFailure(error.message);
+    } else if (error is AppApiMalformedRequest) {
+      throw AppRepositoryFailure(error.message);
+    }
+  }
     return _cachedResponseList;
   }
 
