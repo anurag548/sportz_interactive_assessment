@@ -47,6 +47,9 @@ class MatchDetails extends Equatable {
     required this.matchDate,
     required this.matchTime,
     this.matchStatus = 'Scheduled',
+    this.matchLeague = 'ICC',
+    this.matchType = 'ODI',
+    this.matchNumber = '-1',
   });
 
   /// Converts the response json string to a [MatchDetails].
@@ -58,11 +61,15 @@ class MatchDetails extends Equatable {
     return MatchDetails(
       homeTeamId: matchDetailJson['Team_Home'] as String,
       awayTeamId: matchDetailJson['Team_Away'] as String,
+      matchStatus: matchDetailJson['Status'] as String,
+      venueName: venueJson['Name'] as String,
       matchId: matchJson['Id'] as String,
       matchDate: matchJson['Date'] as String,
       matchTime: matchJson['Time'] as String,
-      venueName: venueJson['Name'] as String,
-      matchStatus: matchDetailJson['Status'] as String,
+      matchLeague: matchJson['League'] as String,
+      matchType: matchJson['Type'] as String,
+      matchNumber: matchJson['Number'] as String,
+
     );
   }
 
@@ -87,6 +94,15 @@ class MatchDetails extends Equatable {
   /// Stores the status of the match.
   final String matchStatus;
 
+  /// The league in which the match is being played.
+  final String matchLeague;
+
+   /// Match type.
+   final String matchType;
+
+  /// Stores the match number.
+   final String matchNumber;
+
   @override
   List<Object> get props => [
         matchId,
@@ -96,6 +112,9 @@ class MatchDetails extends Equatable {
         matchDate,
         matchTime,
         matchStatus,
+        matchLeague,
+        matchType,
+        matchNumber,
       ];
 }
 

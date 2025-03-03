@@ -13,8 +13,11 @@ class MatchEntity extends Equatable {
     required this.awayTeam,
     required this.venue,
     this.dateTime,
+    this.matchStatus = 'Scheduled',
+    this.matchLeagueEntity = MatchLeagueEntity.empty,
   });
 
+  /// Parsing the match details for the match listing.
   factory MatchEntity.forMatchListing(
     MatchDetails matchDetails,
     List<TeamDetails> teamDetails,
@@ -23,7 +26,8 @@ class MatchEntity extends Equatable {
       id: matchDetails.matchId,
       venue: matchDetails.venueName,
       dateTime:
-          '${matchDetails.matchDate.replaceAll('/', '-')} ${matchDetails.matchTime}',
+          '${matchDetails.matchDate} ${matchDetails.matchTime}',
+      matchStatus: matchDetails.matchStatus,
       homeTeam: TeamEntity.forMatchListing(
         teamDetails.firstWhere(
           (team) => team.teamId == matchDetails.homeTeamId,
@@ -34,9 +38,15 @@ class MatchEntity extends Equatable {
           (team) => team.teamId == matchDetails.awayTeamId,
         ),
       ),
+      matchLeagueEntity: MatchLeagueEntity(
+        leagueName: matchDetails.matchLeague,
+        matchType: matchDetails.matchType,
+        matchNumber: matchDetails.matchNumber,
+      ),
     );
   }
 
+  /// Parsing the match details for the match detail.
   factory MatchEntity.forMatchDetail(
     MatchDetails matchDetails,
     List<TeamDetails> teamDetails,
@@ -81,11 +91,49 @@ class MatchEntity extends Equatable {
   /// The venue of the match.
   final String venue;
 
+  /// Status for the match.
+  final String matchStatus;
+
+  /// The league in which the match is being played.
+  final MatchLeagueEntity matchLeagueEntity;
+
   @override
   List<Object?> get props => [
         id,
         homeTeam,
         awayTeam,
         dateTime,
+        venue,
+        matchStatus,
       ];
+}
+
+/// {@template match_league_entity}
+/// Represents a league in which a match is being played.
+/// {@endtemplate}
+class MatchLeagueEntity extends Equatable {
+  /// {@macro match_league_entity}
+  const MatchLeagueEntity({
+    required this.leagueName,
+    required this.matchType,
+    this. matchNumber = '',
+  });
+
+  /// An empty instance of match league entity.
+  static const empty = MatchLeagueEntity(
+    leagueName: '',
+    matchType: '',
+  );
+
+  /// An empty match league entity.
+  final String leagueName;
+
+  /// The type of match.
+  final String matchType;
+
+  /// The number of the match.
+  final String matchNumber;
+
+  @override
+  List<Object?> get props => [leagueName, matchType,];
 }
